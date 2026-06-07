@@ -1,24 +1,26 @@
-const { db } = require('../src/db/connection');
+const { initDb, saveDb } = require('../src/db/connection');
 
-function seed() {
+async function seed() {
+  const db = await initDb();
   const now = new Date().toISOString();
   const stmt = db.prepare(`INSERT INTO recipes (title, description, ingredients, instructions, image_url, prep_time, cook_time, servings, created_at, updated_at)
-    VALUES (@title, @description, @ingredients, @instructions, @image_url, @prep_time, @cook_time, @servings, @created_at, @updated_at)`);
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
-  const sample = {
-    title: 'Spaghetti Aglio e Olio',
-    description: 'Simple pasta with garlic, olive oil, and chili flakes.',
-    ingredients: JSON.stringify(['spaghetti', 'garlic', 'olive oil', 'chili flakes', 'parsley', 'salt']),
-    instructions: JSON.stringify(['Boil pasta', 'Sauté garlic', 'Toss pasta with oil and garlic', 'Serve']),
-    image_url: null,
-    prep_time: '10m',
-    cook_time: '12m',
-    servings: 2,
-    created_at: now,
-    updated_at: now
-  };
+  const sample = [
+    'Spaghetti Aglio e Olio',
+    'Simple pasta with garlic, olive oil, and chili flakes.',
+    JSON.stringify(['spaghetti', 'garlic', 'olive oil', 'chili flakes', 'parsley', 'salt']),
+    JSON.stringify(['Boil pasta', 'Sauté garlic', 'Toss pasta with oil and garlic', 'Serve']),
+    null,
+    '10m',
+    '12m',
+    2,
+    now,
+    now
+  ];
 
   stmt.run(sample);
+  saveDb(db);
   console.log('Seeded sample recipe.');
 }
 

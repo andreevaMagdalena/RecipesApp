@@ -1,4 +1,4 @@
-const { db } = require('./connection');
+const { initDb, saveDb } = require('./connection');
 
 function parseRow(row) {
   if (!row) return null;
@@ -13,70 +13,91 @@ function parseRow(row) {
   }
 }
 
-function getAllRecipes() {
-  const rows = db.prepare('SELECT * FROM recipes ORDER BY created_at DESC').all();
+async function getAllRecipes() {
+  const db = await initDb();
+  const stmt = db.prepare('SELECT * FROM recipes ORDER BY created_at DESC');
+  const rows = [];
+  while (stmt.step()) {
+    rows.push(stmt.getAsObject());
+  }
+  stmt.free();
   return rows.map(parseRow);
 }
 
-function getRecipeById(id) {
-  const row = db.prepare('SELECT * FROM recipes WHERE id = ?').get(id);
+async function getRecipeById(id) {
+  const db = await initDb();
+  const stmt = db.prepare('SELECT * FROM recipes WHERE id = ?');
+  stmt.bind([id]);
+  const row = stmt.step() ? stmt.getAsObject() : null;
+  stmt.free();
   return parseRow(row);
 }
 
-function createRecipe(data) {
+async function createRecipe(data) {
+  const db = await initDb();
   const stmt = db.prepare(`INSERT INTO recipes (title, description, ingredients, instructions, image_url, prep_time, cook_time, servings, created_at, updated_at)
-    VALUES (@title, @description, @ingredients, @instructions, @image_url, @prep_time, @cook_time, @servings, @created_at, @updated_at)`);
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
   const now = new Date().toISOString();
-  const info = stmt.run({
-    title: data.title || null,
-    description: data.description || null,
-    ingredients: data.ingredients ? JSON.stringify(data.ingredients) : JSON.stringify([]),
-    instructions: data.instructions ? JSON.stringify(data.instructions) : JSON.stringify([]),
-    image_url: data.image_url || null,
-    prep_time: data.prep_time || null,
-    cook_time: data.cook_time || null,
-    servings: data.servings || null,
-    created_at: now,
-    updated_at: now
-  });
+  stmt.run([
+    data.title || null,
+    data.description || null,
+    data.ingredients ? JSON.stringify(data.ingredients) : JSON.stringify([]),
+    data.instructions ? JSON.stringify(data.instructions) : JSON.stringify([]),
+    data.image_url || null,
+    data.prep_time || null,
+    data.cook_time || null,
+    data.servings || null,
+    now,
+    now
+  ]);
+  stmt.free();
 
-  return getRecipeById(info.lastInsertRowid);
+  const lastIdStmt = db.prepare('SELECT last_insert_rowid() AS id');
+  const insertedId = lastIdStmt.step() ? lastIdStmt.getAsObject().id : null;
+  lastIdStmt.free();
+
+  saveDb(db);
+  return insertedId ? getRecipeById(insertedId) : null;
 }
 
-function updateRecipe(id, data) {
+async function updateRecipe(id, data) {
+  const db = await initDb();
   const now = new Date().toISOString();
   const stmt = db.prepare(`UPDATE recipes SET
-    title = @title,
-    description = @description,
-    ingredients = @ingredients,
-    instructions = @instructions,
-    image_url = @image_url,
-    prep_time = @prep_time,
-    cook_time = @cook_time,
-    servings = @servings,
-    updated_at = @updated_at
-    WHERE id = @id`);
+    title = ?,
+    description = ?,
+    ingredients = ?,
+    instructions = ?,
+    image_url = ?,
+    prep_time = ?,
+    cook_time = ?,
+    servings = ?,
+    updated_at = ?
+    WHERE id = ?`);
 
-  stmt.run({
-    id,
-    title: data.title || null,
-    description: data.description || null,
-    ingredients: data.ingredients ? JSON.stringify(data.ingredients) : JSON.stringify([]),
-    instructions: data.instructions ? JSON.stringify(data.instructions) : JSON.stringify([]),
-    image_url: data.image_url || null,
-    prep_time: data.prep_time || null,
-    cook_time: data.cook_time || null,
-    servings: data.servings || null,
-    updated_at: now
-  });
+  stmt.run([
+    data.title || null,
+    data.description || null,
+    data.ingredients ? JSON.stringify(data.ingredients) : JSON.stringify([]),
+    data.instructions ? JSON.stringify(data.instructions) : JSON.stringify([]),
+    data.image_url || null,
+    data.prep_time || null,
+    data.cook_time || null,
+    data.servings || null,
+    now,
+    id
+  ]);
 
+  saveDb(db);
   return getRecipeById(id);
 }
 
-function deleteRecipe(id) {
+async function deleteRecipe(id) {
+  const db = await initDb();
   const stmt = db.prepare('DELETE FROM recipes WHERE id = ?');
-  const info = stmt.run(id);
+  const info = stmt.run([id]);
+  saveDb(db);
   return info.changes > 0;
 }
 
