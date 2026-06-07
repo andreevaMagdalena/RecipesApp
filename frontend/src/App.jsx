@@ -109,10 +109,24 @@ export default function App() {
           <p className="eyebrow">Recipe Manager</p>
           <h1>
             <button
-              className="link-button"
+              className="link-button app-logo"
               onClick={() => { setSelectedRecipe(null); setPage(PAGE_LIST); navigate('/') }}
+              aria-label="Go to home"
             >
-              Cook & Share
+              <span className="logo-mark" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="28" height="28" rx="14" fill="url(#logoGradient)"/>
+                  <path d="M12 11v10M16 11v10M20 11v10" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M12 11c0-2 1.5-3 4-3s4 1 4 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                  <defs>
+                    <linearGradient id="logoGradient" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#d9b39e"/>
+                      <stop offset="1" stopColor="#b5886d"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              <span className="logo-text">Cook &amp; Share</span>
             </button>
           </h1>
         </div>

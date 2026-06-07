@@ -29,10 +29,6 @@ export default function RecipeListPage({ recipes, onView, onEdit, onDelete }) {
             <div className="card-content">
               <h3>{recipe.title}</h3>
               <p className="card-description">{recipe.description || 'No description provided.'}</p>
-              <div className="meta-row">
-                <span>{recipe.servings ? `${recipe.servings} servings` : 'Servings: -'}</span>
-                <span>{recipe.cook_time ? recipe.cook_time : 'Cook: -'}</span>
-              </div>
             </div>
             <div className="card-actions">
               <button className="secondary-button" onClick={() => onView(recipe.id)} aria-label={`View ${recipe.title}`} title="View">
