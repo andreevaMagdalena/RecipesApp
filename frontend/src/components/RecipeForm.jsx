@@ -68,7 +68,11 @@ export default function RecipeForm({ mode, initialRecipe, onCancel, onSave }) {
 
   return (
     <main>
-      <button className="link-button" onClick={onCancel}>← Back</button>
+      <button className="link-button" onClick={onCancel} aria-label="Back" title="Back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
       <section className="form-panel">
         <div>
           <p className="eyebrow">{mode === 'edit' ? 'Edit recipe' : 'New recipe'}</p>
@@ -110,7 +114,7 @@ export default function RecipeForm({ mode, initialRecipe, onCancel, onSave }) {
           <div className="list-field">
             <div className="list-field-header">
               <span>Ingredients</span>
-              <button type="button" className="text-button" onClick={() => addListEntry('ingredients')}>Add item</button>
+              <button type="button" className="text-button" onClick={() => addListEntry('ingredients')} aria-label="Add ingredient" title="Add item">+ Add</button>
             </div>
             {formData.ingredients.map((ingredient, index) => (
               <div key={index} className="list-item-row">
@@ -127,7 +131,7 @@ export default function RecipeForm({ mode, initialRecipe, onCancel, onSave }) {
           <div className="list-field">
             <div className="list-field-header">
               <span>Instructions</span>
-              <button type="button" className="text-button" onClick={() => addListEntry('instructions')}>Add step</button>
+              <button type="button" className="text-button" onClick={() => addListEntry('instructions')} aria-label="Add instruction" title="Add step">+ Add</button>
             </div>
             {formData.instructions.map((instruction, index) => (
               <div key={index} className="list-item-row">
@@ -142,8 +146,16 @@ export default function RecipeForm({ mode, initialRecipe, onCancel, onSave }) {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="secondary-button" onClick={onCancel}>Cancel</button>
-            <button type="submit" className="primary-button">Save recipe</button>
+            <button type="button" className="secondary-button" onClick={onCancel} aria-label="Cancel" title="Cancel">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button type="submit" className="primary-button" aria-label="Save recipe" title="Save">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
         </form>
       </section>
