@@ -18,9 +18,13 @@ export default function RecipeListPage({ recipes, onView, onEdit, onDelete }) {
         ) : recipes.map(recipe => (
           <article key={recipe.id} className="card">
             {recipe.image_url ? (
-              <div className="card-image-wrap">
+              <button
+                className="card-image-wrap link-button"
+                onClick={() => onView(recipe.id)}
+                aria-label={`View ${recipe.title}`}
+              >
                 <img className="card-image" src={recipe.image_url} alt={recipe.title} />
-              </div>
+              </button>
             ) : null}
             <div className="card-content">
               <h3>{recipe.title}</h3>

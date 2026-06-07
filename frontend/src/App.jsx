@@ -100,7 +100,14 @@ export default function App() {
       <header className="app-header">
         <div>
           <p className="eyebrow">Recipe Manager</p>
-          <h1>Cook & Share</h1>
+          <h1>
+            <button
+              className="link-button"
+              onClick={() => { setSelectedRecipe(null); setPage(PAGE_LIST) }}
+            >
+              Cook & Share
+            </button>
+          </h1>
         </div>
         <div className="header-actions">
           <button className="primary-button" onClick={() => { setFormMode('create'); setSelectedRecipe(null); setPage(PAGE_FORM) }}>
