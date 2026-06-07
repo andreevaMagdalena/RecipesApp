@@ -5,6 +5,7 @@ import RecipeListPage from './components/RecipeListPage'
 import RecipeDetailPage from './components/RecipeDetailPage'
 import RecipeForm from './components/RecipeForm'
 import LoginPage from './components/LoginPage'
+import SignUpPage from './components/SignUpPage'
 import './styles.css'
 
 const PAGE_LIST = 'list'
@@ -15,6 +16,7 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const isLoginPage = location.pathname === '/login'
+  const isSignupPage = location.pathname === '/signup'
   const [recipes, setRecipes] = useState([])
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [page, setPage] = useState(PAGE_LIST)
@@ -115,24 +117,29 @@ export default function App() {
           </h1>
         </div>
         <div className="header-actions">
-          <button
-            className="primary-button"
-            onClick={() => { setFormMode('create'); setSelectedRecipe(null); setPage(PAGE_FORM) }}
-            aria-label="Add recipe"
-            title="Add recipe"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          {!isLoginPage && !isSignupPage && (
+            <button
+              className="primary-button"
+              onClick={() => { setFormMode('create'); setSelectedRecipe(null); setPage(PAGE_FORM) }}
+              aria-label="Add recipe"
+              title="Add recipe"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
           <button
             className="secondary-button"
             onClick={() => navigate('/login')}
             aria-label="Log in"
             title="Log in"
           >
-            Log in
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M4 21c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            </svg>
           </button>
         </div>
       </header>
@@ -140,7 +147,7 @@ export default function App() {
       {error && <div className="alert alert-error">{error}</div>}
       {loading && <div className="alert alert-info">Loading…</div>}
 
-      {!isLoginPage && page === PAGE_LIST && (
+      {!isLoginPage && !isSignupPage && page === PAGE_LIST && (
         <RecipeListPage
           recipes={recipes}
           onView={handleView}
@@ -149,7 +156,7 @@ export default function App() {
         />
       )}
 
-      {!isLoginPage && page === PAGE_DETAIL && selectedRecipe && (
+      {!isLoginPage && !isSignupPage && page === PAGE_DETAIL && selectedRecipe && (
         <RecipeDetailPage
           recipe={selectedRecipe}
           onBack={() => setPage(PAGE_LIST)}
@@ -158,7 +165,7 @@ export default function App() {
         />
       )}
 
-      {!isLoginPage && page === PAGE_FORM && (
+      {!isLoginPage && !isSignupPage && page === PAGE_FORM && (
         <RecipeForm
           mode={formMode}
           initialRecipe={formMode === 'edit' ? selectedRecipe : null}
@@ -168,7 +175,11 @@ export default function App() {
       )}
 
       {isLoginPage && (
-        <LoginPage onCancel={() => navigate('/')} />
+        <LoginPage onCancel={() => navigate('/')} onSignUp={() => navigate('/signup')} />
+      )}
+
+      {isSignupPage && (
+        <SignUpPage onCancel={() => navigate('/')} />
       )}
     </div>
   )

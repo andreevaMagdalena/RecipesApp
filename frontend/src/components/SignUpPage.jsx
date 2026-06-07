@@ -1,21 +1,32 @@
 import React, { useState } from 'react'
 
-export default function LoginPage({ onCancel, onSignUp }) {
+export default function SignUpPage({ onCancel }) {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   function handleSubmit(event) {
     event.preventDefault()
-    // Placeholder: actual authentication can be added later
-    window.alert('Login submitted. Implement authentication next.')
+    window.alert('Sign-up submitted. Implement registration next.')
   }
 
   return (
     <div className="form-panel">
-      <h2>Log in</h2>
-      <p className="subtitle">Enter your credentials to access your recipes.</p>
+      <h2>Sign up</h2>
+      <p className="subtitle">Create a new account and start managing your recipes.</p>
 
       <form className="recipe-form" onSubmit={handleSubmit}>
+        <label>
+          Full name
+          <input
+            type="text"
+            value={name}
+            onChange={event => setName(event.target.value)}
+            required
+            placeholder="Your name"
+          />
+        </label>
+
         <label>
           Email address
           <input
@@ -43,16 +54,10 @@ export default function LoginPage({ onCancel, onSignUp }) {
             Cancel
           </button>
           <button type="submit" className="primary-button">
-            Log in
+            Create account
           </button>
         </div>
       </form>
-
-      <div className="form-actions" style={{ justifyContent: 'center', marginTop: '16px' }}>
-        <button type="button" className="text-button" onClick={onSignUp}>
-          Don’t have an account? Create account
-        </button>
-      </div>
     </div>
   )
 }
