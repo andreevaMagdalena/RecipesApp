@@ -6,7 +6,6 @@ export default function RecipeListPage({ recipes, onView, onEdit, onDelete }) {
       <section className="section-heading">
         <div>
           <h2>All Recipes</h2>
-          <p>Find recipes by title, view details, or edit an existing recipe.</p>
         </div>
       </section>
 
