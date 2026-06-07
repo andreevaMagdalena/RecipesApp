@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getAllRecipes, getRecipeById, createRecipe, updateRecipe, deleteRecipe } from './services/api'
 import RecipeListPage from './components/RecipeListPage'
 import RecipeDetailPage from './components/RecipeDetailPage'
 import RecipeForm from './components/RecipeForm'
+import LoginPage from './components/LoginPage'
 import './styles.css'
 
 const PAGE_LIST = 'list'
@@ -10,6 +12,9 @@ const PAGE_DETAIL = 'detail'
 const PAGE_FORM = 'form'
 
 export default function App() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isLoginPage = location.pathname === '/login'
   const [recipes, setRecipes] = useState([])
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [page, setPage] = useState(PAGE_LIST)
@@ -103,7 +108,7 @@ export default function App() {
           <h1>
             <button
               className="link-button"
-              onClick={() => { setSelectedRecipe(null); setPage(PAGE_LIST) }}
+              onClick={() => { setSelectedRecipe(null); setPage(PAGE_LIST); navigate('/') }}
             >
               Cook & Share
             </button>
@@ -121,13 +126,21 @@ export default function App() {
               <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          <button
+            className="secondary-button"
+            onClick={() => navigate('/login')}
+            aria-label="Log in"
+            title="Log in"
+          >
+            Log in
+          </button>
         </div>
       </header>
 
       {error && <div className="alert alert-error">{error}</div>}
       {loading && <div className="alert alert-info">Loading…</div>}
 
-      {page === PAGE_LIST && (
+      {!isLoginPage && page === PAGE_LIST && (
         <RecipeListPage
           recipes={recipes}
           onView={handleView}
@@ -136,7 +149,7 @@ export default function App() {
         />
       )}
 
-      {page === PAGE_DETAIL && selectedRecipe && (
+      {!isLoginPage && page === PAGE_DETAIL && selectedRecipe && (
         <RecipeDetailPage
           recipe={selectedRecipe}
           onBack={() => setPage(PAGE_LIST)}
@@ -145,13 +158,17 @@ export default function App() {
         />
       )}
 
-      {page === PAGE_FORM && (
+      {!isLoginPage && page === PAGE_FORM && (
         <RecipeForm
           mode={formMode}
           initialRecipe={formMode === 'edit' ? selectedRecipe : null}
           onCancel={() => setPage(selectedRecipe ? PAGE_DETAIL : PAGE_LIST)}
           onSave={data => (formMode === 'edit' ? handleUpdate(selectedRecipe.id, data) : handleCreate(data))}
         />
+      )}
+
+      {isLoginPage && (
+        <LoginPage onCancel={() => navigate('/')} />
       )}
     </div>
   )
