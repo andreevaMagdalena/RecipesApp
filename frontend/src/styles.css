@@ -129,6 +129,22 @@ h1::after {
 .header-actions {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d9b39e 0%, #b5886d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  cursor: default;
+  flex-shrink: 0;
 }
 
 .primary-button,

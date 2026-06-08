@@ -184,14 +184,19 @@ export default function App() {
           )}
           {isAuthenticated ? (
             <>
-              <span className="auth-badge">Signed in as {authUser?.name || authUser?.email}</span>
+              <div className="user-avatar" title={`Signed in as ${authUser?.name || authUser?.email}`}>
+                {(authUser?.name || authUser?.email)?.[0]?.toUpperCase()}
+              </div>
               <button
                 className="secondary-button"
                 onClick={handleLogout}
                 aria-label="Log out"
                 title="Log out"
               >
-                Logout
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 8l4 4m0 0l-4 4m4-4H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
             </>
           ) : (
