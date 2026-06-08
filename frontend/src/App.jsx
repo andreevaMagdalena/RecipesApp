@@ -19,10 +19,49 @@ export default function App() {
   const isSignupPage = location.pathname === '/signup'
   const [recipes, setRecipes] = useState([])
   const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const [authToken, setAuthToken] = useState(() => {
+    try {
+      return localStorage.getItem('authToken')
+    } catch {
+      return null
+    }
+  })
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('authUser') || 'null')
+    } catch {
+      return null
+    }
+  })
   const [page, setPage] = useState(PAGE_LIST)
   const [formMode, setFormMode] = useState('create')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const isAuthenticated = Boolean(authToken)
+
+  function handleAuthSuccess(token, user) {
+    setAuthToken(token)
+    setAuthUser(user)
+    try {
+      localStorage.setItem('authToken', token)
+      localStorage.setItem('authUser', JSON.stringify(user))
+    } catch (err) {
+      console.warn('Unable to save auth state', err)
+    }
+  }
+
+  function handleLogout() {
+    setAuthToken(null)
+    setAuthUser(null)
+    try {
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('authUser')
+    } catch (err) {
+      console.warn('Unable to clear auth state', err)
+    }
+    navigate('/')
+  }
 
   async function refreshRecipes() {
     setLoading(true)
@@ -69,7 +108,6 @@ export default function App() {
       setLoading(false)
     }
   }
-
   async function handleUpdate(id, data) {
     setLoading(true)
     setError('')
@@ -131,7 +169,7 @@ export default function App() {
           </h1>
         </div>
         <div className="header-actions">
-          {!isLoginPage && !isSignupPage && (
+          {!isLoginPage && !isSignupPage && isAuthenticated && (
             <button
               className="primary-button"
               onClick={() => { setFormMode('create'); setSelectedRecipe(null); setPage(PAGE_FORM) }}
@@ -144,17 +182,31 @@ export default function App() {
               </svg>
             </button>
           )}
-          <button
-            className="secondary-button"
-            onClick={() => navigate('/login')}
-            aria-label="Log in"
-            title="Log in"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" stroke="currentColor" strokeWidth="2" fill="none"/>
-              <path d="M4 21c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            </svg>
-          </button>
+          {isAuthenticated ? (
+            <>
+              <span className="auth-badge">Signed in as {authUser?.name || authUser?.email}</span>
+              <button
+                className="secondary-button"
+                onClick={handleLogout}
+                aria-label="Log out"
+                title="Log out"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              className="secondary-button"
+              onClick={() => navigate('/login')}
+              aria-label="Log in"
+              title="Log in"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M4 21c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+              </svg>
+            </button>
+          )}
         </div>
       </header>
 
@@ -167,6 +219,7 @@ export default function App() {
           onView={handleView}
           onDelete={handleDelete}
           onEdit={recipe => { setSelectedRecipe(recipe); setFormMode('edit'); setPage(PAGE_FORM) }}
+          isAuthenticated={isAuthenticated}
         />
       )}
 
@@ -176,6 +229,7 @@ export default function App() {
           onBack={() => setPage(PAGE_LIST)}
           onEdit={() => { setFormMode('edit'); setPage(PAGE_FORM) }}
           onDelete={() => handleDelete(selectedRecipe.id)}
+          isAuthenticated={isAuthenticated}
         />
       )}
 
@@ -189,11 +243,24 @@ export default function App() {
       )}
 
       {isLoginPage && (
-        <LoginPage onCancel={() => navigate('/')} onSignUp={() => navigate('/signup')} />
+        <LoginPage
+          onCancel={() => navigate('/')}
+          onSignUp={() => navigate('/signup')}
+          onLoginSuccess={data => {
+            handleAuthSuccess(data.token, data.user)
+            navigate('/')
+          }}
+        />
       )}
 
       {isSignupPage && (
-        <SignUpPage onCancel={() => navigate('/')} />
+        <SignUpPage
+          onCancel={() => navigate('/')}
+          onSignUpSuccess={data => {
+            handleAuthSuccess(data.token, data.user)
+            navigate('/')
+          }}
+        />
       )}
     </div>
   )

@@ -1,13 +1,25 @@
 import React, { useState } from 'react'
+import { signUp } from '../services/api'
 
-export default function SignUpPage({ onCancel }) {
+export default function SignUpPage({ onCancel, onSignUpSuccess }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    window.alert('Sign-up submitted. Implement registration next.')
+    setLoading(true)
+    setError('')
+    try {
+      const result = await signUp({ name, email, password })
+      if (onSignUpSuccess) onSignUpSuccess(result)
+    } catch (err) {
+      setError(err.message || 'Unable to create account. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -49,12 +61,13 @@ export default function SignUpPage({ onCancel }) {
           />
         </label>
 
+        {error && <div className="alert alert-error">{error}</div>}
         <div className="form-actions">
-          <button type="button" className="secondary-button" onClick={onCancel}>
+          <button type="button" className="secondary-button" onClick={onCancel} disabled={loading}>
             Cancel
           </button>
-          <button type="submit" className="primary-button">
-            Create account
+          <button type="submit" className="primary-button" disabled={loading}>
+            {loading ? 'Creating account…' : 'Create account'}
           </button>
         </div>
       </form>

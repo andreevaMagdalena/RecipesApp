@@ -1,5 +1,6 @@
 const express = require('express');
 const repo = require('../db/recipeRepository');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', authMiddleware, async (req, res, next) => {
   try {
     const created = await repo.createRecipe(req.body || {});
     res.status(201).json(created);
@@ -31,7 +32,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', authMiddleware, async (req, res, next) => {
   try {
     const updated = await repo.updateRecipe(req.params.id, req.body || {});
     res.json(updated);
@@ -40,7 +41,7 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const ok = await repo.deleteRecipe(req.params.id);
     res.json({ success: ok });

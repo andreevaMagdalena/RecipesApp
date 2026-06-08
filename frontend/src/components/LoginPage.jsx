@@ -1,13 +1,24 @@
 import React, { useState } from 'react'
+import { logIn } from '../services/api'
 
-export default function LoginPage({ onCancel, onSignUp }) {
+export default function LoginPage({ onCancel, onSignUp, onLoginSuccess }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    // Placeholder: actual authentication can be added later
-    window.alert('Login submitted. Implement authentication next.')
+    setLoading(true)
+    setError('')
+    try {
+      const result = await logIn({ email, password })
+      if (onLoginSuccess) onLoginSuccess(result)
+    } catch (err) {
+      setError(err.message || 'Unable to sign in. Please check your credentials.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -16,6 +27,7 @@ export default function LoginPage({ onCancel, onSignUp }) {
       <p className="subtitle">Enter your credentials to access your recipes.</p>
 
       <form className="recipe-form" onSubmit={handleSubmit}>
+        {error && <div className="alert alert-error">{error}</div>}
         <label>
           Email address
           <input
@@ -39,11 +51,11 @@ export default function LoginPage({ onCancel, onSignUp }) {
         </label>
 
         <div className="form-actions">
-          <button type="button" className="secondary-button" onClick={onCancel}>
+          <button type="button" className="secondary-button" onClick={onCancel} disabled={loading}>
             Cancel
           </button>
-          <button type="submit" className="primary-button">
-            Log in
+          <button type="submit" className="primary-button" disabled={loading}>
+            {loading ? 'Signing in…' : 'Log in'}
           </button>
         </div>
       </form>
