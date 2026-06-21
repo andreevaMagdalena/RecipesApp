@@ -6,11 +6,13 @@ import RecipeDetailPage from './components/RecipeDetailPage'
 import RecipeForm from './components/RecipeForm'
 import LoginPage from './components/LoginPage'
 import SignUpPage from './components/SignUpPage'
+import ProfilePage from './components/ProfilePage'
 import './styles.css'
 
 const PAGE_LIST = 'list'
 const PAGE_DETAIL = 'detail'
 const PAGE_FORM = 'form'
+const PAGE_PROFILE = 'profile'
 
 export default function App() {
   const location = useLocation()
@@ -184,7 +186,19 @@ export default function App() {
           )}
           {isAuthenticated ? (
             <>
-              <div className="user-avatar" title={`Signed in as ${authUser?.name || authUser?.email}`}>
+              <div
+                className="user-avatar"
+                title={`Signed in as ${authUser?.name || authUser?.email}`}
+                onClick={() => setPage(PAGE_PROFILE)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setPage(PAGE_PROFILE)
+                  }
+                }}
+              >
                 {(authUser?.name || authUser?.email)?.[0]?.toUpperCase()}
               </div>
               <button
@@ -244,6 +258,13 @@ export default function App() {
           initialRecipe={formMode === 'edit' ? selectedRecipe : null}
           onCancel={() => setPage(selectedRecipe ? PAGE_DETAIL : PAGE_LIST)}
           onSave={data => (formMode === 'edit' ? handleUpdate(selectedRecipe.id, data) : handleCreate(data))}
+        />
+      )}
+
+      {!isLoginPage && !isSignupPage && page === PAGE_PROFILE && authUser && (
+        <ProfilePage
+          authUser={authUser}
+          onBack={() => setPage(PAGE_LIST)}
         />
       )}
 

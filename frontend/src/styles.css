@@ -143,8 +143,37 @@ h1::after {
   font-weight: 600;
   font-size: 16px;
   color: #fff;
-  cursor: default;
+  cursor: pointer;
   flex-shrink: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
+}
+
+.user-avatar:focus {
+  outline: 3px solid rgba(165, 117, 74, 0.5);
+  outline-offset: 2px;
+}
+
+.profile-page {
+  display: block;
+}
+
+.profile-page .detail-card {
+  margin-top: 20px;
+}
+
+.profile-page .detail-card dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.profile-page .detail-card dd {
+  margin: 4px 0 12px 0;
+  color: #475569;
 }
 
 .primary-button,
