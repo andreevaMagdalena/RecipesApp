@@ -37,7 +37,14 @@ function getHeaders(json = true) {
 async function handleResponse(res) {
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(body || 'API error')
+    let message = body || 'API error'
+    try {
+      const json = JSON.parse(body)
+      message = json.message || json.error || body
+    } catch {
+      /* ignore parse failures */
+    }
+    throw new Error(message)
   }
   return res.json()
 }

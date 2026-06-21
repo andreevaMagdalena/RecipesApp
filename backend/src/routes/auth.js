@@ -11,12 +11,12 @@ function isValidEmail(email) {
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body || {};
   if (!name || !isValidEmail(email) || !password || password.length < 8) {
-    return res.status(400).json({ error: 'Name, valid email and password (min 8 chars) are required.' });
+    return res.status(400).json({ message: 'Name, valid email and password (min 8 chars) are required.' });
   }
 
   const existingUser = await getUserByEmail(email.toLowerCase().trim());
   if (existingUser) {
-    return res.status(409).json({ error: 'Email already in use.' });
+    return res.status(409).json({ message: 'Email already in use.' });
   }
 
   const passwordHash = await hashPassword(password);
@@ -32,17 +32,17 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body || {};
   if (!isValidEmail(email) || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
+    return res.status(400).json({ message: 'Email and password are required.' });
   }
 
   const user = await getUserByEmail(email.toLowerCase().trim());
   if (!user) {
-    return res.status(401).json({ error: 'Invalid email or password.' });
+    return res.status(401).json({ message: 'Invalid email or password.' });
   }
 
   const isValid = await verifyPassword(password, user.password_hash);
   if (!isValid) {
-    return res.status(401).json({ error: 'Invalid email or password.' });
+    return res.status(401).json({ message: 'Invalid email or password.' });
   }
 
   const token = generateToken(user);
